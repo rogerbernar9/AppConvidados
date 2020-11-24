@@ -1,8 +1,27 @@
 package com.example.appconvidados.service.repository
 
+import android.content.ContentValues
+import android.content.Context
+import com.example.appconvidados.service.constants.DataBaseConstants
 import com.example.appconvidados.service.model.GuestModel
 
-class GuestRepository {
+class GuestRepository private constructor(context: Context) {
+
+    private var mGuestDatabaseHelper: GuestDatabaseHelper = GuestDatabaseHelper(context)
+
+    companion object {
+        private lateinit var repository: GuestRepository
+
+        fun getInstance(context: Context) : GuestRepository {
+            // verificar se a variavel repositorio nao ja foi inicializada
+            if (!::repository.isInitialized) {
+                // inicalize
+                repository = GuestRepository(context)
+            }
+            // retorne
+            return GuestRepository(context)
+        }
+    }
 
     fun getAll(): List<GuestModel> {
         val list: MutableList<GuestModel> = ArrayList()
@@ -19,7 +38,19 @@ class GuestRepository {
         return list
     }
 
-    fun save(guest: GuestModel) {
+    fun save(guest: GuestModel): Boolean {
+        return try {
+            val db = mGuestDatabaseHelper.writableDatabase
+
+            val contentValues = ContentValues()
+            contentValues.put(DataBaseConstants.GUEST.COLUMNS.NAME, guest.name)
+            contentValues.put(DataBaseConstants.GUEST.COLUMNS.PRESENCE, guest.presence)
+            db.insert(DataBaseConstants.GUEST.TABLE_NAME, null, contentValues)
+
+            true
+        } catch (e: Exception) {
+            false
+        }
 
     }
 
