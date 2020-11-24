@@ -45,12 +45,14 @@
             app:layout_constraintTop_toBottomOf="@+id/textConfirmation"
     >
         <RadioButton
+                android:id="@+id/radioPresent"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Presente"
         />
 
         <RadioButton
+                android:id="@+id/radioAbsent"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Ausente"
