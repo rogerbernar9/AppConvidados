@@ -8,6 +8,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.example.appconvidados.viewmodel.GuestFormViewModel
 import com.example.appconvidados.R
+import com.example.appconvidados.service.constants.GuestConstants
 import kotlinx.android.synthetic.main.activity_guest_form.*
 
 class GuestFormActivity : AppCompatActivity(), View.OnClickListener {
@@ -24,8 +25,18 @@ class GuestFormActivity : AppCompatActivity(), View.OnClickListener {
         ).get(GuestFormViewModel::class.java)
 //        mViewModel = ViewModelProvider(this).get(GuestFormViewModel::class.java)
 
+        loadData()
         setListeners()
         observe()
+    }
+
+    private fun loadData() {
+        val bundle = intent.extras
+        if (bundle != null) {
+            val id = bundle.getInt(GuestConstants.GUESTID)
+            mViewModel.load(id)
+        }
+
     }
 
     private fun observe() {
@@ -36,6 +47,15 @@ class GuestFormActivity : AppCompatActivity(), View.OnClickListener {
                 Toast.makeText(applicationContext, "Falha !", Toast.LENGTH_LONG).show()
             }
             finish()
+        })
+
+        mViewModel.guest.observe(this, Observer {
+            editName.setText(it.name)
+            if (it.presence) {
+                radioPresent.isChecked = true
+            } else {
+                radioAbsent.isChecked = true
+            }
         })
     }
 
