@@ -14,11 +14,11 @@ import com.example.appconvidados.R
 import com.example.appconvidados.service.constants.GuestConstants
 import com.example.appconvidados.view.adapter.GuestAdapter
 import com.example.appconvidados.view.listener.GuestListener
-import com.example.appconvidados.viewmodel.AllGuestsViewModel
+import com.example.appconvidados.viewmodel.GuestsViewModel
 
 class AllGuestsFragment : Fragment() {
 
-    private lateinit var allGuestsViewModel: AllGuestsViewModel
+    private lateinit var mViewModel: GuestsViewModel
     private val mAdapter: GuestAdapter = GuestAdapter()
     private lateinit var mListener: GuestListener
 
@@ -27,8 +27,8 @@ class AllGuestsFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        allGuestsViewModel =
-            ViewModelProviders.of(this).get(AllGuestsViewModel::class.java)
+        mViewModel =
+            ViewModelProviders.of(this).get(GuestsViewModel::class.java)
         val root = inflater.inflate(R.layout.fragment_all, container, false)
 
         // RecyclerView
@@ -52,6 +52,11 @@ class AllGuestsFragment : Fragment() {
 
                 startActivity(intent)
             }
+
+            override fun OnDelete(id: Int) {
+                mViewModel.delete(id)
+                mViewModel.load(GuestConstants.FILTER.EMPTY)
+            }
         }
 
         mAdapter.attachListener(mListener)
@@ -62,11 +67,12 @@ class AllGuestsFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
-        allGuestsViewModel.load()
+        mViewModel.load(GuestConstants.FILTER.EMPTY)
     }
 
+
     private fun observer() {
-        allGuestsViewModel.guesList.observe(viewLifecycleOwner, Observer {
+        mViewModel.guesList.observe(viewLifecycleOwner, Observer {
             mAdapter.updateGuests(it)
         })
     }
